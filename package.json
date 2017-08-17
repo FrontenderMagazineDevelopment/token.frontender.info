@@ -1,0 +1,29 @@
+{
+  "name": "token_frontender_magazine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tokens Frontender Magazine",
+  "keywords": [],
+  "author": "Anton Nemtsev",
+  "license": "CC",
+  "main": "server.js",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "dotenv": "^4.0.0",
+    "jsonwebtoken": "^7.4.3",
+    "jwt-builder": "^1.1.0",
+    "restify": "^5.2.0",
+    "restify-cookies": "^0.2.2",
+    "restify-session": "^1.1.1"
+  },
+  "scripts": {
+    "start": "node ./build/server.js",
+    "build": "babel source --minified -s true -d build --ignore __tests__/**,__mocks__/**"
+  }
+}
