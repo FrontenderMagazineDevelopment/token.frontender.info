@@ -8,6 +8,7 @@
   "license": "CC",
   "main": "server.js",
   "dependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.0",
@@ -23,6 +24,7 @@
     "restify-session": "^1.1.1"
   },
   "scripts": {
+    "install": "npm run build",
     "start": "node ./build/server.js",
     "build": "babel source --minified -s true -d build --ignore __tests__/**,__mocks__/**"
   }
