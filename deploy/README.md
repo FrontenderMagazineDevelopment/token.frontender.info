@@ -6,4 +6,3 @@
 * WEB_PATH - path, where to deploy with trailing /
 * TOKEN_SERVICE_SECRET - app secret token
 * TOKEN_SERVICE_OPEN - app public token
-* NODE_ENV - production | local environment
