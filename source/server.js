@@ -110,15 +110,9 @@ server.get('/generate/', async (req, res, next)=>{
 
   profile.token = answer.access_token
 
-  const user = request({
+  const user = await request({
     method: 'GET',
     uri: `${config.githubAPI}user`,
-    body: {
-      client_id: process.env.TOKEN_SERVICE_OPEN,
-      client_secret: process.env.TOKEN_SERVICE_SECRET,
-      code: req.query.code,
-      state: req.query.state,
-    },
     headers: {
       Authorization: `token ${profile.token}`,
       'User-Agent': 'FM-App',
@@ -143,11 +137,11 @@ server.get('/generate/', async (req, res, next)=>{
   profile.isTeam = (isTeamResponce.statusCode === 200);
   if (profile.isTeam) {
 
-    profile.isOwner = (isTeamResponce.body.role === 'member');
+    profile.isOwner = (isTeamResponce.body.role === 'admin');
 
-    const isAuthorRequest = request({
+    const isAuthorRequest = await request({
       method: 'HEAD',
-      uri: `${config.githubAPI}/teams/${config.teams.author}/members/${profile.login}`,
+      uri: `${config.githubAPI}teams/${config.teams.author}/members/${profile.login}`,
       headers: {
         Authorization: `token ${profile.token}`,
         'User-Agent': 'FM-App',
@@ -156,9 +150,9 @@ server.get('/generate/', async (req, res, next)=>{
       resolveWithFullResponse: true,
     });
 
-    const isDeveloperRequest = request({
+    const isDeveloperRequest = await request({
       method: 'HEAD',
-      uri: `${config.githubAPI}/teams/${config.teams.developer}/members/${profile.login}`,
+      uri: `${config.githubAPI}teams/${config.teams.developer}/members/${profile.login}`,
       headers: {
         Authorization: `token ${profile.token}`,
         'User-Agent': 'FM-App',
@@ -167,9 +161,9 @@ server.get('/generate/', async (req, res, next)=>{
       resolveWithFullResponse: true,
     });
 
-    const isEditorRequest = request({
+    const isEditorRequest = await request({
       method: 'HEAD',
-      uri: `${config.githubAPI}/teams/${config.teams.editor}/members/${profile.login}`,
+      uri: `${config.githubAPI}teams/${config.teams.editor}/members/${profile.login}`,
       headers: {
         Authorization: `token ${profile.token}`,
         'User-Agent': 'FM-App',
@@ -178,9 +172,9 @@ server.get('/generate/', async (req, res, next)=>{
       resolveWithFullResponse: true,
     });
 
-    const isStafferRequest = request({
+    const isStafferRequest = await request({
       method: 'HEAD',
-      uri: `${config.githubAPI}/teams/${config.teams.staffer}/members/${profile.login}`,
+      uri: `${config.githubAPI}teams/${config.teams.staffer}/members/${profile.login}`,
       headers: {
         Authorization: `token ${profile.token}`,
         'User-Agent': 'FM-App',
@@ -189,9 +183,9 @@ server.get('/generate/', async (req, res, next)=>{
       resolveWithFullResponse: true,
     });
 
-    const isTranslatorRequest = request({
+    const isTranslatorRequest = await request({
       method: 'HEAD',
-      uri: `${config.githubAPI}/teams/${config.teams.translator}/members/${profile.login}`,
+      uri: `${config.githubAPI}teams/${config.teams.translator}/members/${profile.login}`,
       headers: {
         Authorization: `token ${profile.token}`,
         'User-Agent': 'FM-App',
@@ -200,19 +194,11 @@ server.get('/generate/', async (req, res, next)=>{
       resolveWithFullResponse: true,
     });
 
-    const roles = await Promise.all([
-      isAuthorRequest,
-      isDeveloperRequest,
-      isEditorRequest,
-      isStafferRequest,
-      isTranslatorRequest
-    ]);
-
-    profile.isAuthor = (roles[0].statusCode === 204);
-    profile.isDeveloper = (roles[1].statusCode === 204);
-    profile.isEditor = (roles[2].statusCode === 204);
-    profile.isStaffer = (roles[3].statusCode === 204);
-    profile.isTranslator = (roles[4].statusCode === 204);
+    profile.isAuthor = (isAuthorRequest.statusCode === 204);
+    profile.isDeveloper = (isDeveloperRequest.statusCode === 204);
+    profile.isEditor = (isEditorRequest.statusCode === 204);
+    profile.isStaffer = (isStafferRequest.statusCode === 204);
+    profile.isTranslator = (isTranslatorRequest.statusCode === 204);
   } else {
     profile.isOwner = false;
     profile.isAuthor = false;
