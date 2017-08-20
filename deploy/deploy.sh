@@ -8,7 +8,8 @@ export PROCESS_NAME=token.frontender.info
 
 mkdir ${RESULT_DIR}
 shopt -s extglob
-mv -f !(${RESULT_DIR}) ./${RESULT_DIR}
+mv -f -v !(${RESULT_DIR}) ./${RESULT_DIR}
+mv -f -v ./{.[!.],}* ./${RESULT_DIR}
 tar -czf ${ARCH_NAME} ${RESULT_DIR}
 sshpass -e scp -C -o StrictHostKeyChecking=no ${ARCH_NAME} ${SSH_USER}@${SSH_IP}:${WEB_PATH}
 sshpass -e ssh -C ${SSH_USER}@${SSH_IP} << EOF
@@ -23,7 +24,6 @@ fi
 cd ${RESULT_DIR};
 export NODE_ENV=production;
 npm i;
-ln -ds /websites/nginx/.well-known ./build/.well-known
 cd ..
 rm -dRf ${SYMLINK_NAME}
 ln -ds ${RESULT_DIR} ./${SYMLINK_NAME}

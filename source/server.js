@@ -11,13 +11,15 @@ const CONFIG_DIR = '../config/';
 const ENV_PATH = resolve(__dirname, '../../.env');
 const CONFIG_PATH = resolve(__dirname, `${CONFIG_DIR}application.${(process.env.NODE_ENV || 'local')}.json`);
 
-console.log(CONFIG_PATH);
-
 if (!fs.existsSync(ENV_PATH)) throw new Error('Envirnment files not found');
 dotenv.config({ path: ENV_PATH });
 
 if (!fs.existsSync(CONFIG_PATH)) throw new Error('Config not found');
 const config = require(CONFIG_PATH);
+
+console.log('config: ', CONFIG_PATH);
+console.log('env: ', ENV_PATH);
+console.log('CHALLENGE_BASE: ', process.env.CHALLENGE_BASE);
 
 const session = restifySession({
   debug : true,
