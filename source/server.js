@@ -214,27 +214,24 @@ server.get('/generate/', async (req, res, next) => {
     profile.isStaffer = false;
     profile.isTranslator = false;
   }
-  console.log('profile: ', profile);
 
-  const payload = {
+  const token = jwt({
+    algorithm: 'HS256',
+    secret: 'super-secret',
+    nbf: 0,
+    iat: new Date().getTime(),
+    exp: 86400,
+    iss: 'https://frontender.info/',
     scope: profile,
-    iss: 'Frontender Magazine',
-    expires: Math.round((new Date().getTime() / 1000)) + 3600,
-  };
-
-  const token = new jwt.WebToken(
-    JSON.stringify(payload),
-    JSON.stringify({
-      typ: 'JWT',
-      alg: 'HS256',
-    }));
+  });
 
   res.setCookie('token', token, {
     domain: 'frontender.info',
     maxAge: 86400,
-    secure: false,
-    httpOnly: true,
   });
+
+  console.log('profile: ', profile);
+  console.log('token: ', token);
 
   res.redirect(302, (req.session.referrer === undefined) ? 'https://admin.frontender.info/' : req.session.referrer, next);
 });

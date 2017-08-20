@@ -16,6 +16,7 @@ sshpass -e ssh -C ${SSH_USER}@${SSH_IP} << EOF
 cd ${WEB_PATH};
 tar -xzf ./${ARCH_NAME} -C ./;
 rm ./${ARCH_NAME};
+ls -dt ${WEB_PATH}*/ | tail -n +5 | xargs rm -rf;
 if [ ! -f ".env" ]; then
     echo TOKEN_SERVICE_SECRET=${TOKEN_SERVICE_SECRET} >> .env;
     echo TOKEN_SERVICE_OPEN=${TOKEN_SERVICE_OPEN} >> .env;
