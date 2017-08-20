@@ -1,4 +1,5 @@
 import { resolve } from 'path';
+import request from 'request';
 import uuid from 'uuid';
 import jwt from 'jwt-builder';
 import restify from 'restify';
@@ -58,6 +59,8 @@ server.get('/', (req, res, next)=>{
   const redirect_uri = config.tokenService;
   const scope = 'read:org';
 
+  req.session.state = state;
+
   res.redirect(`${url
     }?client_id=${client_id
     }&redirect_uri=${redirect_uri
@@ -67,9 +70,45 @@ server.get('/', (req, res, next)=>{
 });
 
 server.get('/generate/', (req, res, next)=>{
-  res.status(200);
 
-  res.send(JSON.stringify(req.session)).send(JSON.stringify(req.params)).send(JSON.stringify(req.body).send(JSON.stringify(req.query))).end();
+  if (req.session.state !== req.query.state) {
+    res.status(401).end();
+  }
+
+  request.post({
+    url: config.githubAuthToken,
+    headers: {
+      Accept: 'application/json',
+    },
+    form: {
+      client_id: process.env.APP_OPEN,
+      client_secret: process.env.APP_SECRET,
+      code: request.query.code,
+      state: request.query.state,
+    },
+  }, (error, res, body) => {
+    if (!error && res.statusCode == 200) {
+      const answer = JSON.parse(body);
+      request.session.access_token = answer.access_token;
+      request.session.scope = answer.scope;
+      request.session.token_type = answer.token_type;
+      response.writeHead(302, { location: '/' });
+      response.end();
+    } else {
+      response.writeHead(response.statusCode);
+      response.end(error);
+    }
+  });
+
+  const data = {
+    session: req.session,
+    body: req.body,
+    query: req.query,
+    params: req.params
+  };
+
+  res.status(200);
+  res.send(JSON.stringify(data)).end();
 });
 
 server.listen(PORT, ()=> {
