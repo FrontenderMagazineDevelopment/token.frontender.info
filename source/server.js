@@ -62,16 +62,18 @@ server.get('/.well-known/acme-challenge/.*/', restify.plugins.serveStatic({
 
 server.get('/', (req, res, next)=>{
 
-  console.log('session a: ', req.session);
-
   const client_id = process.env.TOKEN_SERVICE_OPEN;
   const state = uuid.v4();
   const url = config.githubAuthURL;
   const redirect_uri = config.tokenService;
   const scope = 'read:org';
 
-  req.session.referer = req.headers.referer;
+  req.session.referrer = req.headers.referrer || req.headers.referer;
+
+  console.log('referrer: ', req.session.referrer);
+
   req.session.state = state;
+  console.log('session a: ', req.session);
 
   res.redirect(`${url
     }?client_id=${client_id
@@ -83,19 +85,13 @@ server.get('/', (req, res, next)=>{
 
 server.get('/generate/', async (req, res, next)=>{
 
-  console.log('session b: ', req.session);
+  const profile = {};
 
   if (req.session.state !== req.query.state) {
     res.status(401);
-    const data = {
-      session: req.session,
-      body: req.body,
-      query: req.query,
-      params: req.params
-    };
-    res.send(data);
     res.end();
   }
+
   const answer = await request({
     method: 'POST',
     uri: config.githubAuthToken,
@@ -107,28 +103,127 @@ server.get('/generate/', async (req, res, next)=>{
     },
     headers: {
       Accept: 'application/json',
+      'User-Agent': 'FM-App',
     },
     json: true
   });
 
-  console.log('answer: ', answer);
+  profile.token = answer.access_token
 
-  req.session.access_token = answer.access_token;
-  req.session.token_type = answer.token_type;
-  req.session.scope = answer.scope;
+  const user = request({
+    method: 'GET',
+    uri: `${config.githubAPI}user`,
+    body: {
+      client_id: process.env.TOKEN_SERVICE_OPEN,
+      client_secret: process.env.TOKEN_SERVICE_SECRET,
+      code: req.query.code,
+      state: req.query.state,
+    },
+    headers: {
+      Authorization: `token ${profile.token}`,
+      'User-Agent': 'FM-App',
+      Accept: 'application/json',
+    },
+    json: true
+  });
 
-  const data = {
-    session: req.session,
-    body: req.body,
-    query: req.query,
-    params: req.params
-  };
+  profile.login = user.login;
 
-  res.status(200);
-  res.send(data);
-  res.end();
+  const isTeamResponce = await request({
+    method: 'GET',
+    uri: `${config.githubAPI}orgs/${config.orgName}/memberships/${profile.login}`,
+    headers: {
+      Authorization: `token ${profile.token}`,
+      'User-Agent': 'FM-App',
+      Accept: 'application/json',
+    },
+    json: true,
+    resolveWithFullResponse: true,
+  });
+  profile.isTeam = (isTeamResponce.statusCode === 200);
+  if (profile.isTeam) {
 
-  // res.writeHead(302, { location: (req.session.referer === '') ? 'https://admin.frontender.info/' : req.session.referer });
+    profile.isOwner = (isTeamResponce.body.role === 'member');
+
+    const isAuthorRequest = request({
+      method: 'HEAD',
+      uri: `${config.githubAPI}/teams/${config.teams.author}/members/${profile.login}`,
+      headers: {
+        Authorization: `token ${profile.token}`,
+        'User-Agent': 'FM-App',
+        Accept: 'application/json',
+      },
+      resolveWithFullResponse: true,
+    });
+
+    const isDeveloperRequest = request({
+      method: 'HEAD',
+      uri: `${config.githubAPI}/teams/${config.teams.developer}/members/${profile.login}`,
+      headers: {
+        Authorization: `token ${profile.token}`,
+        'User-Agent': 'FM-App',
+        Accept: 'application/json',
+      },
+      resolveWithFullResponse: true,
+    });
+
+    const isEditorRequest = request({
+      method: 'HEAD',
+      uri: `${config.githubAPI}/teams/${config.teams.editor}/members/${profile.login}`,
+      headers: {
+        Authorization: `token ${profile.token}`,
+        'User-Agent': 'FM-App',
+        Accept: 'application/json',
+      },
+      resolveWithFullResponse: true,
+    });
+
+    const isStafferRequest = request({
+      method: 'HEAD',
+      uri: `${config.githubAPI}/teams/${config.teams.staffer}/members/${profile.login}`,
+      headers: {
+        Authorization: `token ${profile.token}`,
+        'User-Agent': 'FM-App',
+        Accept: 'application/json',
+      },
+      resolveWithFullResponse: true,
+    });
+
+    const isTranslatorRequest = request({
+      method: 'HEAD',
+      uri: `${config.githubAPI}/teams/${config.teams.translator}/members/${profile.login}`,
+      headers: {
+        Authorization: `token ${profile.token}`,
+        'User-Agent': 'FM-App',
+        Accept: 'application/json',
+      },
+      resolveWithFullResponse: true,
+    });
+
+    const roles = await Promise.all([
+      isAuthorRequest,
+      isDeveloperRequest,
+      isEditorRequest,
+      isStafferRequest,
+      isTranslatorRequest
+    ]);
+
+    profile.isAuthor = (roles[0].statusCode === 204);
+    profile.isDeveloper = (roles[1].statusCode === 204);
+    profile.isEditor = (roles[2].statusCode === 204);
+    profile.isStaffer = (roles[3].statusCode === 204);
+    profile.isTranslator = (roles[4].statusCode === 204);
+  } else {
+    profile.isOwner = false;
+    profile.isAuthor = false;
+    profile.isDeveloper = false;
+    profile.isEditor = false;
+    profile.isStaffer = false;
+    profile.isTranslator = false;
+  }
+  console.log('profile: ', profile);
+
+  res.redirect(302, (req.session.referrer === undefined) ? 'https://admin.frontender.info/' : req.session.referrer, next);
 });
 
 server.listen(PORT, ()=> {
