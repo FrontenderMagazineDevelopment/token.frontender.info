@@ -4,7 +4,6 @@ import { resolve } from 'path';
 import uuid from 'uuid';
 import jwt from 'jwt-builder';
 import restify from 'restify';
-// import restifySession from 'restify-session';
 import cookieParser from 'restify-cookies';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -19,15 +18,6 @@ dotenv.config({ path: ENV_PATH });
 
 if (!fs.existsSync(CONFIG_PATH)) throw new Error('Config not found');
 const config = require(CONFIG_PATH);
-
-console.log('config: ', CONFIG_PATH);
-console.log('env: ', ENV_PATH);
-console.log('CHALLENGE_BASE: ', process.env.CHALLENGE_BASE);
-
-// const session = restifySession({
-//   debug : true,
-//   ttl   : 2
-// });
 
 const {name, version} = require('../package.json');
 const PORT = process.env.PORT || 3006;
@@ -44,7 +34,6 @@ server.use(sessions({
   duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
   activeDuration: 1000 * 60 * 5 // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
 }));
-// server.use(session.sessionManager);
 
 server.pre(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
