@@ -128,17 +128,23 @@ server.get('/generate/', async (req, res, next)=>{
 
     profile.isOwner = (isTeamResponce.body.role === 'admin');
 
-    const isAuthorRequest = await request({
-      method: 'HEAD',
-      uri: `${config.githubAPI}teams/${config.teams.author}/members/${profile.login}`,
-      headers: {
-        Authorization: `token ${profile.token}`,
-        'User-Agent': 'FM-App',
-        Accept: 'application/json',
-      },
-      resolveWithFullResponse: true,
-    });
+    try {
+      const isAuthorRequest = await request({
+        method: 'HEAD',
+        uri: `${config.githubAPI}teams/${config.teams.author}/members/${profile.login}`,
+        headers: {
+          Authorization: `token ${profile.token}`,
+          'User-Agent': 'FM-App',
+          Accept: 'application/json',
+        },
+        resolveWithFullResponse: true,
+      });
+      profile.isAuthor = true;
+    } catch (error) {
+      profile.isAuthor = false;
+    }
 
+    try {
     const isDeveloperRequest = await request({
       method: 'HEAD',
       uri: `${config.githubAPI}teams/${config.teams.developer}/members/${profile.login}`,
@@ -149,7 +155,12 @@ server.get('/generate/', async (req, res, next)=>{
       },
       resolveWithFullResponse: true,
     });
+    profile.isDeveloper = true;
+  } catch (error) {
+    profile.isDeveloper = false;
+  }
 
+    try {
     const isEditorRequest = await request({
       method: 'HEAD',
       uri: `${config.githubAPI}teams/${config.teams.editor}/members/${profile.login}`,
@@ -160,7 +171,12 @@ server.get('/generate/', async (req, res, next)=>{
       },
       resolveWithFullResponse: true,
     });
+    profile.isEditor = true;
+  } catch (error) {
+    profile.isEditor = false;
+  }
 
+  try {
     const isStafferRequest = await request({
       method: 'HEAD',
       uri: `${config.githubAPI}teams/${config.teams.staffer}/members/${profile.login}`,
@@ -171,7 +187,12 @@ server.get('/generate/', async (req, res, next)=>{
       },
       resolveWithFullResponse: true,
     });
+    profile.isStaffer = true;
+  } catch (error) {
+    profile.isStaffer = false;
+  }
 
+  try {
     const isTranslatorRequest = await request({
       method: 'HEAD',
       uri: `${config.githubAPI}teams/${config.teams.translator}/members/${profile.login}`,
@@ -182,12 +203,11 @@ server.get('/generate/', async (req, res, next)=>{
       },
       resolveWithFullResponse: true,
     });
+    profile.isTranslator = true;
+  } catch (error) {
+    profile.isTranslator = false;
+  }
 
-    profile.isAuthor = (isAuthorRequest.statusCode === 204);
-    profile.isDeveloper = (isDeveloperRequest.statusCode === 204);
-    profile.isEditor = (isEditorRequest.statusCode === 204);
-    profile.isStaffer = (isStafferRequest.statusCode === 204);
-    profile.isTranslator = (isTranslatorRequest.statusCode === 204);
   } else {
     profile.isOwner = false;
     profile.isAuthor = false;
