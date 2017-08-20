@@ -69,7 +69,7 @@ server.get('/', (req, res, next)=>{
 server.get('/generate/', (req, res, next)=>{
   res.status(200);
 
-  res.send(JSON.stringify(req.session)).end();
+  res.send(JSON.stringify(req.session)).send(JSON.stringify(req.params)).send(JSON.stringify(req.body).send(JSON.stringify(req.query))).end();
 });
 
 server.listen(PORT, ()=> {
