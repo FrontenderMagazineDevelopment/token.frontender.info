@@ -99,19 +99,19 @@ server.get('/generate/', async (req, res, next)=>{
     req.session.scope = answer.scope;
     req.session.token_type = answer.token_type;
 
+    const data = {
+      session: req.session,
+      body: req.body,
+      query: req.query,
+      params: req.params
+    };
+
+    res.status(200);
+    res.send(JSON.stringify(data)).end();
+
   } catch (error) {
     res.end(error);
   }
-
-  const data = {
-    session: req.session,
-    body: req.body,
-    query: req.query,
-    params: req.params
-  };
-
-  res.status(200);
-  res.send(JSON.stringify(data)).end();
 
   // res.writeHead(302, { location: (req.session.referer === '') ? 'https://admin.frontender.info/' : req.session.referer });
 });
