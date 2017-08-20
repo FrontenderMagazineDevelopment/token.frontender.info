@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import uuid from 'uuid';
 import jwt from 'jwt-builder';
 import restify from 'restify';
-import restifySession from 'restify-session';
+// import restifySession from 'restify-session';
 import cookieParser from 'restify-cookies';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -12,6 +12,7 @@ import fs from 'fs';
 const CONFIG_DIR = '../config/';
 const ENV_PATH = resolve(__dirname, '../../.env');
 const CONFIG_PATH = resolve(__dirname, `${CONFIG_DIR}application.${(process.env.NODE_ENV || 'local')}.json`);
+const sessions = require("client-sessions");
 
 if (!fs.existsSync(ENV_PATH)) throw new Error('Envirnment files not found');
 dotenv.config({ path: ENV_PATH });
@@ -23,10 +24,10 @@ console.log('config: ', CONFIG_PATH);
 console.log('env: ', ENV_PATH);
 console.log('CHALLENGE_BASE: ', process.env.CHALLENGE_BASE);
 
-const session = restifySession({
-  debug : true,
-  ttl   : 2
-});
+// const session = restifySession({
+//   debug : true,
+//   ttl   : 2
+// });
 
 const {name, version} = require('../package.json');
 const PORT = process.env.PORT || 3006;
@@ -37,7 +38,13 @@ server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.gzipResponse());
 server.use(cookieParser.parse);
-server.use(session.sessionManager);
+server.use(sessions({
+  cookieName: 'session', // cookie name dictates the key name added to the request object
+  secret: 'blargadeeblargblarg', // should be a large unguessable string
+  duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
+  activeDuration: 1000 * 60 * 5 // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
+}));
+// server.use(session.sessionManager);
 
 server.pre(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -54,6 +61,9 @@ server.get('/.well-known/acme-challenge/.*/', restify.plugins.serveStatic({
 }));
 
 server.get('/', (req, res, next)=>{
+
+  console.log('session a: ', req.session);
+
   const client_id = process.env.TOKEN_SERVICE_OPEN;
   const state = uuid.v4();
   const url = config.githubAuthURL;
@@ -73,8 +83,17 @@ server.get('/', (req, res, next)=>{
 
 server.get('/generate/', async (req, res, next)=>{
 
+  console.log('session b: ', req.session);
+
   if (req.session.state !== req.query.state) {
     res.status(401);
+    const data = {
+      session: req.session,
+      body: req.body,
+      query: req.query,
+      params: req.params
+    };
+    res.send(data);
     res.end();
   }
   const answer = await request({
