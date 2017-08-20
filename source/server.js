@@ -44,6 +44,11 @@ server.pre(function(req, res, next) {
   return next();
 });
 
+server.get('/.well-known/acme-challenge/.*/', restify.plugins.serveStatic({
+  directory: process.env.CHALLENGE_BASE,
+  index: false,
+}));
+
 server.get('/', (req, res, next)=>{
   const client_id = process.env.TOKEN_SERVICE_OPEN;
   const state = uuid.v4();

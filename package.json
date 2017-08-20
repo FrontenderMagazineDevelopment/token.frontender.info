@@ -26,6 +26,7 @@
   "scripts": {
     "install": "npm run build",
     "start": "node ./build/server.js",
-    "build": "babel source --minified -s true -d build --ignore __tests__/**,__mocks__/**"
+    "build": "babel source --minified -s true -d build --ignore __tests__/**,__mocks__/**",
+    "watch": "babel source --watch --minified -s true -d build --ignore __tests__/**,__mocks__/**"
   }
 }

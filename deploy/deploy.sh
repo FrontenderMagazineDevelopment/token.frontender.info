@@ -16,17 +16,19 @@ cd ${WEB_PATH};
 tar -xzf ./${ARCH_NAME} -C ./;
 rm ./${ARCH_NAME};
 if [ ! -f ".env" ]; then
-    echo APP_SECRET=${TOKEN_SERVICE_SECRET} >> .env;
-    echo APP_PUBLIC=${TOKEN_SERVICE_OPEN} >> .env;
+    echo TOKEN_SERVICE_SECRET=${TOKEN_SERVICE_SECRET} >> .env;
+    echo TOKEN_SERVICE_OPEN=${TOKEN_SERVICE_OPEN} >> .env;
+    echo CHALLENGE_BASE=${CHALLENGE_BASE} >> .env
 fi
 cd ${RESULT_DIR};
 export NODE_ENV=production;
 npm i;
+ln -ds /websites/nginx/.well-known ./build/.well-known
 cd ..
 rm -dRf ${SYMLINK_NAME}
 ln -ds ${RESULT_DIR} ./${SYMLINK_NAME}
 cd ./${SYMLINK_NAME}
 pm2 stop ${PROCESS_NAME}
 pm2 delete ${PROCESS_NAME}
-pm2 start ./build/server.js --name="${PROCESS_NAME}" --watch
+pm2 start ./build/server.js --watch --name="${PROCESS_NAME}"
 EOF
