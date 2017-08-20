@@ -1,5 +1,6 @@
+import 'babel-polyfill';
 import { resolve } from 'path';
-import request from 'request';
+import request from 'request-promise';
 import uuid from 'uuid';
 import jwt from 'jwt-builder';
 import restify from 'restify';
@@ -59,6 +60,7 @@ server.get('/', (req, res, next)=>{
   const redirect_uri = config.tokenService;
   const scope = 'read:org';
 
+  req.session.referer = req.headers.referer;
   req.session.state = state;
 
   res.redirect(`${url
@@ -69,36 +71,37 @@ server.get('/', (req, res, next)=>{
 
 });
 
-server.get('/generate/', (req, res, next)=>{
+server.get('/generate/', async (req, res, next)=>{
 
   if (req.session.state !== req.query.state) {
     res.status(401).end();
   }
 
-  request.post({
-    url: config.githubAuthToken,
-    headers: {
-      Accept: 'application/json',
-    },
-    form: {
-      client_id: process.env.APP_OPEN,
-      client_secret: process.env.APP_SECRET,
-      code: request.query.code,
-      state: request.query.state,
-    },
-  }, (error, res, body) => {
-    if (!error && res.statusCode == 200) {
-      const answer = JSON.parse(body);
-      request.session.access_token = answer.access_token;
-      request.session.scope = answer.scope;
-      request.session.token_type = answer.token_type;
-      response.writeHead(302, { location: '/' });
-      response.end();
-    } else {
-      response.writeHead(response.statusCode);
-      response.end(error);
-    }
-  });
+  try {
+    const answer = await request({
+      method: 'POST',
+      uri: config.githubAuthToken,
+      form: {
+        client_id: process.env.APP_OPEN,
+        client_secret: process.env.APP_SECRET,
+        code: request.query.code,
+        state: request.query.state,
+      },
+      headers: {
+        Accept: 'application/json',
+      },
+      json: true
+    });
+
+    console.log('answer: ', answer);
+
+    req.session.access_token = answer.access_token;
+    req.session.scope = answer.scope;
+    req.session.token_type = answer.token_type;
+
+  } catch (error) {
+    res.end(error);
+  }
 
   const data = {
     session: req.session,
@@ -109,6 +112,8 @@ server.get('/generate/', (req, res, next)=>{
 
   res.status(200);
   res.send(JSON.stringify(data)).end();
+
+  // res.writeHead(302, { location: (req.session.referer === '') ? 'https://admin.frontender.info/' : req.session.referer });
 });
 
 server.listen(PORT, ()=> {
