@@ -74,46 +74,40 @@ server.get('/', (req, res, next)=>{
 server.get('/generate/', async (req, res, next)=>{
 
   if (req.session.state !== req.query.state) {
-    res.status(401).end();
+    res.status(401);
+    res.end();
   }
+  const answer = await request({
+    method: 'POST',
+    uri: config.githubAuthToken,
+    body: {
+      client_id: process.env.TOKEN_SERVICE_OPEN,
+      client_secret: process.env.TOKEN_SERVICE_SECRET,
+      code: req.query.code,
+      state: req.query.state,
+    },
+    headers: {
+      Accept: 'application/json',
+    },
+    json: true
+  });
 
-  try {
+  console.log('answer: ', answer);
 
-    const answer = await request({
-      method: 'POST',
-      uri: config.githubAuthToken,
-      body: {
-        client_id: process.env.TOKEN_SERVICE_OPEN,
-        client_secret: process.env.TOKEN_SERVICE_SECRET,
-        code: req.query.code,
-        state: req.query.state,
-      },
-      headers: {
-        Accept: 'application/json',
-      },
-      json: true
-    });
+  req.session.access_token = answer.access_token;
+  req.session.token_type = answer.token_type;
+  req.session.scope = answer.scope;
 
-    console.log('answer: ', answer);
+  const data = {
+    session: req.session,
+    body: req.body,
+    query: req.query,
+    params: req.params
+  };
 
-    req.session.access_token = answer.access_token;
-    req.session.token_type = answer.token_type;
-    req.session.scope = answer.scope;
-
-    const data = {
-      session: req.session,
-      body: req.body,
-      query: req.query,
-      params: req.params
-    };
-
-    res.status(200);
-    res.send(data).end();
-
-  } catch (error) {
-    res.status(500);
-    res.send(error).end();
-  }
+  res.status(200);
+  res.send(data);
+  res.end();
 
   // res.writeHead(302, { location: (req.session.referer === '') ? 'https://admin.frontender.info/' : req.session.referer });
 });
