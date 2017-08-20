@@ -1,0 +1,4 @@
+{
+  "tokenService": "https://token.frontender.info/generate/",
+  "githubAuthURL": "https://github.com/login/oauth/authorize"
+}
