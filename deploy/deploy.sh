@@ -28,6 +28,7 @@ cd ..
 rm -dRf ${SYMLINK_NAME}
 ln -ds ${RESULT_DIR} ./${SYMLINK_NAME}
 cd ./${SYMLINK_NAME}
+npm run build
 pm2 stop ${PROCESS_NAME}
 pm2 delete ${PROCESS_NAME}
 pm2 start ./build/server.js --watch --name="${PROCESS_NAME}"
