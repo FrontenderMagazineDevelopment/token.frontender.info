@@ -1,6 +1,6 @@
 import 'babel-polyfill';
-import { resolve } from 'path';
 import request from 'request-promise';
+import { resolve } from 'path';
 import uuid from 'uuid';
 import jwt from 'jwt-builder';
 import restify from 'restify';
