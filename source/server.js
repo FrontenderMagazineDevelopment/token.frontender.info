@@ -78,14 +78,15 @@ server.get('/generate/', async (req, res, next)=>{
   }
 
   try {
+
     const answer = await request({
       method: 'POST',
       uri: config.githubAuthToken,
-      form: {
-        client_id: process.env.APP_OPEN,
-        client_secret: process.env.APP_SECRET,
-        code: request.query.code,
-        state: request.query.state,
+      body: {
+        client_id: process.env.TOKEN_SERVICE_OPEN,
+        client_secret: process.env.TOKEN_SERVICE_SECRET,
+        code: req.query.code,
+        state: req.query.state,
       },
       headers: {
         Accept: 'application/json',
@@ -96,8 +97,8 @@ server.get('/generate/', async (req, res, next)=>{
     console.log('answer: ', answer);
 
     req.session.access_token = answer.access_token;
-    req.session.scope = answer.scope;
     req.session.token_type = answer.token_type;
+    req.session.scope = answer.scope;
 
     const data = {
       session: req.session,
@@ -107,10 +108,11 @@ server.get('/generate/', async (req, res, next)=>{
     };
 
     res.status(200);
-    res.send(JSON.stringify(data)).end();
+    res.send(data).end();
 
   } catch (error) {
-    res.end(error);
+    res.status(500);
+    res.send(error).end();
   }
 
   // res.writeHead(302, { location: (req.session.referer === '') ? 'https://admin.frontender.info/' : req.session.referer });
