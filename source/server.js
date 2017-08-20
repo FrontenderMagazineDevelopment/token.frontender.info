@@ -66,6 +66,12 @@ server.get('/', (req, res, next)=>{
 
 });
 
+server.get('/generate/', (req, res, next)=>{
+  res.status(200);
+
+  res.send(JSON.stringify(req.session)).end();
+});
+
 server.listen(PORT, ()=> {
   console.log('%s listening at %s', server.name, server.url);
 });
