@@ -49,7 +49,7 @@ server.get('/.well-known/acme-challenge/.*/', restify.plugins.serveStatic({
   index: false,
 }));
 
-server.get('/', (req, res, next) => {
+server.get('/auth/', (req, res, next) => {
   const clientId = process.env.TOKEN_SERVICE_OPEN;
   const state = uuid.v4();
   const url = config.githubAuthURL;
@@ -66,7 +66,7 @@ server.get('/', (req, res, next) => {
     }&state=${state}`, next);
 });
 
-server.get('/generate/', async (req, res, next) => {
+server.get('/token/', async (req, res, next) => {
   const profile = {};
 
   if (req.session.state !== req.query.state) {
@@ -84,6 +84,9 @@ server.get('/generate/', async (req, res, next) => {
       state: req.query.state,
     },
     headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: 0,
       Accept: 'application/json',
       'User-Agent': 'FM-App',
     },
@@ -217,7 +220,7 @@ server.get('/generate/', async (req, res, next) => {
 
   const token = jwt({
     algorithm: 'HS256',
-    secret: 'super-secret',
+    secret: 'secret',
     nbf: 0,
     iat: new Date().getTime(),
     exp: 86400,
@@ -226,7 +229,7 @@ server.get('/generate/', async (req, res, next) => {
   });
 
   res.setCookie('token', token, {
-    domain: 'frontender.info',
+    domain: '.frontender.info',
     maxAge: 86400,
   });
 
