@@ -1,5 +1,5 @@
 {
-  "tokenService": "http://token.frontender.info/generate/",
+  "tokenService": "http://token.frontender.info/token/",
   "orgName": "FrontenderMagazine",
   "githubAPI": "https://api.github.com/",
   "githubAuthURL": "https://github.com/login/oauth/authorize",

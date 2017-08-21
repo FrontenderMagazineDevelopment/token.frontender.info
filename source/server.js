@@ -8,8 +8,8 @@ import cookieParser from 'restify-cookies';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
-const CONFIG_DIR = '../config/';
 const ENV_PATH = resolve(__dirname, '../../.env');
+const CONFIG_DIR = '../config/';
 const CONFIG_PATH = resolve(__dirname, `${CONFIG_DIR}application.${(process.env.NODE_ENV || 'local')}.json`);
 const sessions = require('client-sessions');
 
@@ -30,9 +30,9 @@ server.use(restify.plugins.gzipResponse());
 server.use(cookieParser.parse);
 server.use(sessions({
   cookieName: 'session',
-  secret: 'blargadeeblargblarg',
-  duration: 24 * 60 * 60 * 1000,
-  activeDuration: 1000 * 60 * 5,
+  secret: process.env.COOKIE_SECRET,
+  duration: 60 * 60,
+  activeDuration: 60 * 5,
 }));
 
 server.pre((req, res, next) => {
@@ -220,7 +220,7 @@ server.get('/token/', async (req, res, next) => {
 
   const token = jwt({
     algorithm: 'HS256',
-    secret: 'secret',
+    secret: process.env.JWT_SECRET,
     nbf: 0,
     iat: new Date().getTime(),
     exp: 86400,
@@ -229,16 +229,12 @@ server.get('/token/', async (req, res, next) => {
   });
 
   res.setCookie('token', token, {
+    path: '/',
     domain: '.frontender.info',
     maxAge: 86400,
   });
 
-  console.log('profile: ', profile);
-  console.log('token: ', token);
-
-  res.redirect(302, (req.session.referrer === undefined) ? 'https://admin.frontender.info/' : req.session.referrer, next);
+  res.redirect(303, (req.session.referrer === undefined) ? 'https://admin.frontender.info/' : req.session.referrer, next);
 });
 
-server.listen(PORT, () => {
-  console.log('%s listening at %s', server.name, server.url);
-});
+server.listen(PORT);

@@ -21,6 +21,8 @@ if [ ! -f ".env" ]; then
     echo TOKEN_SERVICE_SECRET=${TOKEN_SERVICE_SECRET} >> .env;
     echo TOKEN_SERVICE_OPEN=${TOKEN_SERVICE_OPEN} >> .env;
     echo CHALLENGE_BASE=${CHALLENGE_BASE} >> .env
+    echo JWT_SECRET=${JWT_SECRET} >> .env
+    echo COOKIE_SECRET=${COOKIE_SECRET} >> .env
 fi
 cd ${RESULT_DIR};
 export NODE_ENV=production;
