@@ -20,7 +20,7 @@ if (!fs.existsSync(CONFIG_PATH)) throw new Error('Config not found');
 const config = require(CONFIG_PATH);
 const { name, version } = require('../package.json');
 
-const PORT = process.env.PORT || 3006;
+const PORT = process.env.PORT || 3030;
 
 const server = restify.createServer({ name, version });
 server.use(restify.plugins.acceptParser(server.acceptable));
