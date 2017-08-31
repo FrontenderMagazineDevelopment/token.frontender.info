@@ -11,7 +11,9 @@ import fs from 'fs';
 const ENV_PATH = resolve(__dirname, '../../.env');
 const CONFIG_DIR = '../config/';
 const CONFIG_PATH = resolve(__dirname, `${CONFIG_DIR}application.${(process.env.NODE_ENV || 'local')}.json`);
-const sessions = require('client-sessions');
+
+const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
 
 if (!fs.existsSync(ENV_PATH)) throw new Error('Envirnment files not found');
 dotenv.config({ path: ENV_PATH });
@@ -28,11 +30,10 @@ server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.gzipResponse());
 server.use(cookieParser.parse);
-server.use(sessions({
-  cookieName: 'session',
+
+server.use(session({
+  store: new RedisStore(),
   secret: process.env.COOKIE_SECRET,
-  duration: 60 * 60,
-  activeDuration: 60 * 5,
 }));
 
 server.pre((req, res, next) => {
@@ -49,7 +50,7 @@ server.get('/.well-known/acme-challenge/.*/', restify.plugins.serveStatic({
   index: false,
 }));
 
-server.get('/auth/', (req, res, next) => {
+server.get('/', (req, res, next) => {
   const clientId = process.env.TOKEN_SERVICE_OPEN;
   const state = uuid.v4();
   const url = config.githubAuthURL;
@@ -64,6 +65,8 @@ server.get('/auth/', (req, res, next) => {
     }&redirect_uri=${redirectUri
     }&scope=${scope
     }&state=${state}`, next);
+
+  res.end();
 });
 
 server.get('/token/', async (req, res, next) => {
@@ -230,11 +233,13 @@ server.get('/token/', async (req, res, next) => {
 
   res.setCookie('token', token, {
     path: '/',
-    domain: '.frontender.info',
+    domain: config.cookieDomain,
     maxAge: 86400,
   });
 
-  res.redirect(303, (req.session.referrer === undefined) ? 'https://admin.frontender.info/' : req.session.referrer, next);
+  res.redirect(303, (req.session.referrer === undefined) ?
+    config.defaultRedirect :
+    req.session.referrer, next);
 });
 
 server.listen(PORT);
