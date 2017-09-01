@@ -52,33 +52,9 @@ server.get('/.well-known/acme-challenge/.*/', restify.plugins.serveStatic({
   index: false,
 }));
 
-server.get('/favicon.ico', (req, res) => {
-  res.status(204);
-  res.end();
-});
-
-server.get('/', (req, res, next) => {
-  const clientId = process.env.TOKEN_SERVICE_OPEN;
-  const state = uuid.v4();
-  const url = config.githubAuthURL;
-  const redirectUri = config.tokenService;
-  const scope = 'read:org';
-
-  req.session.referrer = req.headers.referrer || req.headers.referer;
-  req.session.state = state;
-
-  res.redirect(`${url
-    }?client_id=${clientId
-    }&redirect_uri=${redirectUri
-    }&scope=${scope
-    }&state=${state}`, next);
-
-  res.end();
-});
-
 server.get('/token/', async (req, res, next) => {
   const profile = {};
-
+  console.log('path: /token/');
   console.log({
     'session: ': req.session.state,
     'query: ': req.query.state,
@@ -265,6 +241,35 @@ server.get('/token/', async (req, res, next) => {
   res.redirect(303, (req.session.referrer === undefined) ?
     config.defaultRedirect :
     req.session.referrer, next);
+
+  res.end();
+});
+
+server.get('/', (req, res, next) => {
+  console.log('path: /', req.url);
+  if (req.url === '/favicon.ico') {
+    console.log('path: /favicon.ico');
+    req.state(204);
+    req.end();
+    return;
+  }
+
+  const clientId = process.env.TOKEN_SERVICE_OPEN;
+  const state = uuid.v4();
+  const url = config.githubAuthURL;
+  const redirectUri = config.tokenService;
+  const scope = 'read:org';
+
+  req.session.referrer = req.headers.referrer || req.headers.referer;
+  req.session.state = state;
+
+  res.redirect(`${url
+    }?client_id=${clientId
+    }&redirect_uri=${redirectUri
+    }&scope=${scope
+    }&state=${state}`, next);
+
+  res.end();
 });
 
 server.listen(PORT);
