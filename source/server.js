@@ -33,6 +33,8 @@ server.use(cookieParser.parse);
 
 server.use(session({
   store: new RedisStore(),
+  resave: true,
+  saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
 }));
 
@@ -49,6 +51,11 @@ server.get('/.well-known/acme-challenge/.*/', restify.plugins.serveStatic({
   directory: process.env.CHALLENGE_BASE,
   index: false,
 }));
+
+server.get('/favicon.ico', (req, res) => {
+  res.status(204);
+  res.end();
+});
 
 server.get('/', (req, res, next) => {
   const clientId = process.env.TOKEN_SERVICE_OPEN;
@@ -72,11 +79,18 @@ server.get('/', (req, res, next) => {
 server.get('/token/', async (req, res, next) => {
   const profile = {};
 
+  console.log({
+    'session: ': req.session.state,
+    'query: ': req.query.state,
+  });
+
   if (req.session.state !== req.query.state) {
     res.status(401);
     res.end();
+    return;
   }
 
+  console.log('get github token: ');
   const answer = await request({
     method: 'POST',
     uri: config.githubAuthToken,
@@ -98,6 +112,8 @@ server.get('/token/', async (req, res, next) => {
 
   profile.token = answer.access_token;
 
+  console.log('get github token: ', profile);
+
   const user = await request({
     method: 'GET',
     uri: `${config.githubAPI}user`,
@@ -112,6 +128,9 @@ server.get('/token/', async (req, res, next) => {
   profile.login = user.login;
   profile.blog = user.blog;
   profile.email = user.email;
+
+
+  console.log('get github profile: ', profile);
 
   try {
     const isTeamResponce = await request({
@@ -131,6 +150,8 @@ server.get('/token/', async (req, res, next) => {
     profile.isTeam = false;
     profile.isOwner = false;
   }
+
+  console.log('get github profile isTeam: ', profile);
 
   if (profile.isTeam) {
     try {
@@ -221,6 +242,8 @@ server.get('/token/', async (req, res, next) => {
     profile.isTranslator = false;
   }
 
+  console.log('result: ', profile);
+
   const token = jwt({
     algorithm: 'HS256',
     secret: process.env.JWT_SECRET,
@@ -230,6 +253,8 @@ server.get('/token/', async (req, res, next) => {
     iss: 'https://frontender.info/',
     scope: profile,
   });
+
+  console.log('jwt: ', profile);
 
   res.setCookie('token', token, {
     path: '/',
