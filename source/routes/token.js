@@ -42,12 +42,137 @@ export default async (req, res) => {
       json: true,
     });
     token = answer.access_token;
-
-    res.status(200);
-    res.send(token);
-    res.end();
   } catch (error) {
     res.status(500);
     res.end();
   }
+
+  const profile = {};
+
+  const user = await request({
+    method: 'GET',
+    uri: `${config.githubAPI}user`,
+    headers: {
+      Authorization: `token ${token}`,
+      'User-Agent': 'FM-App',
+      Accept: 'application/json',
+    },
+    json: true,
+  });
+
+  profile.login = user.login;
+  profile.blog = user.blog;
+  profile.email = user.email;
+
+  try {
+    const isTeamResponce = await request({
+      method: 'GET',
+      uri: `${config.githubAPI}orgs/${config.orgName}/memberships/${profile.login}`,
+      headers: {
+        Authorization: `token ${token}`,
+        'User-Agent': 'FM-App',
+        Accept: 'application/json',
+      },
+      json: true,
+      resolveWithFullResponse: true,
+    });
+    profile.isTeam = true;
+    profile.isOwner = (isTeamResponce.body.role === 'admin');
+  } catch (error) {
+    profile.isTeam = false;
+    profile.isOwner = false;
+  }
+
+  if (profile.isTeam) {
+    try {
+      await request({
+        method: 'HEAD',
+        uri: `${config.githubAPI}teams/${config.teams.author}/members/${profile.login}`,
+        headers: {
+          Authorization: `token ${token}`,
+          'User-Agent': 'FM-App',
+          Accept: 'application/json',
+        },
+        resolveWithFullResponse: true,
+      });
+      profile.isAuthor = true;
+    } catch (error) {
+      profile.isAuthor = false;
+    }
+
+    try {
+      await request({
+        method: 'HEAD',
+        uri: `${config.githubAPI}teams/${config.teams.developer}/members/${profile.login}`,
+        headers: {
+          Authorization: `token ${token}`,
+          'User-Agent': 'FM-App',
+          Accept: 'application/json',
+        },
+        resolveWithFullResponse: true,
+      });
+      profile.isDeveloper = true;
+    } catch (error) {
+      profile.isDeveloper = false;
+    }
+
+    try {
+      await request({
+        method: 'HEAD',
+        uri: `${config.githubAPI}teams/${config.teams.editor}/members/${profile.login}`,
+        headers: {
+          Authorization: `token ${token}`,
+          'User-Agent': 'FM-App',
+          Accept: 'application/json',
+        },
+        resolveWithFullResponse: true,
+      });
+      profile.isEditor = true;
+    } catch (error) {
+      profile.isEditor = false;
+    }
+
+    try {
+      await request({
+        method: 'HEAD',
+        uri: `${config.githubAPI}teams/${config.teams.staffer}/members/${profile.login}`,
+        headers: {
+          Authorization: `token ${token}`,
+          'User-Agent': 'FM-App',
+          Accept: 'application/json',
+        },
+        resolveWithFullResponse: true,
+      });
+      profile.isStaffer = true;
+    } catch (error) {
+      profile.isStaffer = false;
+    }
+
+    try {
+      await request({
+        method: 'HEAD',
+        uri: `${config.githubAPI}teams/${config.teams.translator}/members/${profile.login}`,
+        headers: {
+          Authorization: `token ${token}`,
+          'User-Agent': 'FM-App',
+          Accept: 'application/json',
+        },
+        resolveWithFullResponse: true,
+      });
+      profile.isTranslator = true;
+    } catch (error) {
+      profile.isTranslator = false;
+    }
+  } else {
+    profile.isOwner = false;
+    profile.isAuthor = false;
+    profile.isDeveloper = false;
+    profile.isEditor = false;
+    profile.isStaffer = false;
+    profile.isTranslator = false;
+  }
+
+  res.status(200);
+  res.send(profile);
+  res.end();
 };
