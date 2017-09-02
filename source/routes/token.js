@@ -1,3 +1,4 @@
+import jwt from 'jwt-builder';
 import request from 'request-promise';
 import fs from 'fs';
 import { resolve } from 'path';
@@ -42,6 +43,7 @@ export default async (req, res) => {
       json: true,
     });
     token = answer.access_token;
+    delete req.session.state;
   } catch (error) {
     res.status(500);
     res.end();
@@ -172,7 +174,17 @@ export default async (req, res) => {
     profile.isTranslator = false;
   }
 
+  const jwtToken = jwt({
+    algorithm: 'HS256',
+    secret: process.env.JWT_SECRET,
+    nbf: 0,
+    iat: new Date().getTime(),
+    exp: 86400,
+    iss: 'https://frontender.info/',
+    scope: profile,
+  });
+
   res.status(200);
-  res.send(profile);
+  res.send(jwtToken);
   res.end();
 };

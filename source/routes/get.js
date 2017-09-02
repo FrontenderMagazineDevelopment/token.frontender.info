@@ -9,9 +9,14 @@ if (!fs.existsSync(CONFIG_PATH)) throw new Error('Config not found');
 const config = require(CONFIG_PATH);
 
 export default (req, res, next) => {
+  if (req.query.state !== undefined) {
+    req.state(204);
+    req.end();
+  }
+
   if (req.url === '/favicon.ico') {
     req.state(204);
-    return next();
+    req.end();
   }
 
   const clientId = process.env.TOKEN_SERVICE_OPEN;
