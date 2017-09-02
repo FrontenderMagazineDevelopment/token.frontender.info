@@ -25,9 +25,11 @@ export default (req, res, next) => {
   const redirectUri = config.tokenService;
   const scope = 'read:org';
 
-  req.session.to = req.params.to;
   req.session.referrer = req.headers.referrer || req.headers.referer;
+  req.session.to = req.query.to;
   req.session.state = state;
+
+  console.log('session: ', req.session);
 
   res.redirect(`${url
     }?client_id=${clientId
