@@ -9,7 +9,7 @@ const CONFIG_PATH = resolve(__dirname, `${CONFIG_DIR}application.${(process.env.
 if (!fs.existsSync(CONFIG_PATH)) throw new Error('Config not found');
 const config = require(CONFIG_PATH);
 
-export default async (req, res) => {
+export default async (req, res, next) => {
   if (req.session === undefined) {
     res.status(400);
     res.end();
@@ -184,7 +184,19 @@ export default async (req, res) => {
     scope: profile,
   });
 
-  res.status(200);
-  res.send(jwtToken);
-  res.end();
+  res.setCookie('token', jwtToken, {
+    path: '/',
+    domain: config.cookieDomain,
+    maxAge: 86400,
+  });
+
+  let url;
+  if (res.session.to !== undefined) {
+    url = res.session.to;
+  } else if (res.session.referrer !== undefined) {
+    url = res.session.referrer;
+  } else if (config.defaultRedirect !== undefined) {
+    url = config.defaultRedirect;
+  }
+  res.redirect(url, next);
 };
