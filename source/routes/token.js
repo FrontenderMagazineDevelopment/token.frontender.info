@@ -43,9 +43,7 @@ export default async (req, res, next) => {
       json: true,
     });
     token = answer.access_token;
-    console.log('session 1: ', req.session);
     delete req.session.state;
-    console.log('session 2: ', req.session);
   } catch (error) {
     res.status(500);
     res.end();
@@ -192,14 +190,6 @@ export default async (req, res, next) => {
     maxAge: 86400,
   });
 
-  console.log('session 3: ', req.session);
-  let url;
-  if (res.session.to !== undefined) {
-    url = res.session.to;
-  } else if (res.session.referrer !== undefined) {
-    url = res.session.referrer;
-  } else if (config.defaultRedirect !== undefined) {
-    url = config.defaultRedirect;
-  }
-  res.redirect(url, next);
+  res.redirect(req.session.to || config.defaultRedirect, next);
 };
+

@@ -29,8 +29,6 @@ export default (req, res, next) => {
   req.session.to = req.query.to;
   req.session.state = state;
 
-  console.log('session: ', req.session);
-
   res.redirect(`${url
     }?client_id=${clientId
     }&redirect_uri=${redirectUri
