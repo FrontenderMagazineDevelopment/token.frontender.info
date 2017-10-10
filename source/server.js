@@ -17,7 +17,7 @@ dotenv.config({ path: ENV_PATH });
 
 const { name, version } = require('../package.json');
 
-const PORT = process.env.PORT || 3030;
+const PORT = process.env.PORT || 3054;
 
 const server = restify.createServer({ name, version });
 server.use(restify.plugins.acceptParser(server.acceptable));
