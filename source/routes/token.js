@@ -190,7 +190,6 @@ export default async (req, res, next) => {
     maxAge: 86400,
   });
 
-  console.log('final target: ', req.session.to || config.defaultRedirect);
   res.redirect(req.session.to || config.defaultRedirect, next);
 };
 
