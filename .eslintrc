@@ -7,23 +7,8 @@
     "import"
   ],
   "env": {
-    "browser": true,
     "node": true,
     "jest": true,
     "es6": true,
-  },
-  "settings" : {
-    "import/core-modules": "config.js",
-    "import/resolver": {
-      "webpack": {
-        "config": "./webpack.config.js"
-      }
-    }
-  },
-  "rules": {
-    "import/no-unresolved": 0,
-    "import/no-extraneous-dependencies": 0,
-    "import/no-dynamic-require": 0,
-    "consistent-return": 0
   }
 }

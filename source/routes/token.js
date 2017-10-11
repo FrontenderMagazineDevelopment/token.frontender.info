@@ -7,7 +7,7 @@ const CONFIG_DIR = '../../config/';
 const CONFIG_PATH = resolve(__dirname, `${CONFIG_DIR}application.${(process.env.NODE_ENV || 'local')}.json`);
 
 if (!fs.existsSync(CONFIG_PATH)) throw new Error('Config not found');
-const config = require(CONFIG_PATH);
+const config = require(CONFIG_PATH); // eslint-disable-line import/no-dynamic-require
 
 export default async (req, res, next) => {
   if (req.session === undefined) {
@@ -190,6 +190,7 @@ export default async (req, res, next) => {
     maxAge: 86400,
   });
 
+  console.log('final target: ', req.session.to || config.defaultRedirect);
   res.redirect(req.session.to || config.defaultRedirect, next);
 };
 
