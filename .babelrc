@@ -1,10 +1,9 @@
 {
-  "presets": [
-    ["env", {
-      "targets": {
-        "browsers": ["last 2 versions", "IE >= 11"]
-      }
-    }],
-    "stage-0"
-  ],
+  "presets": ["@babel/preset-env"],
+  "plugins": [
+    "@babel/plugin-syntax-export-default-from",
+    "@babel/plugin-proposal-export-namespace-from",
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-syntax-dynamic-import"
+  ]
 }
