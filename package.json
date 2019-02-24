@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": false,
   "scripts": {
-    "postinstall": "npm run build",
     "start": "node ./build/server.js",
     "build:dev": "babel source -s true -d build --ignore __tests__/**,__mocks__/**",
     "build": "babel source --minified -s true -d build --ignore __tests__/**,__mocks__/**",
@@ -15,12 +14,10 @@
     "fm"
   ],
   "author": "Anton Nemtsev <thesilentimp@gmail.com>",
-  "contributors": [
-    {
-      "name": "Anton Nemtsev",
-      "email": "thesilentimp@gmail.com"
-    }
-  ],
+  "contributors": [{
+    "name": "Anton Nemtsev",
+    "email": "thesilentimp@gmail.com"
+  }],
   "license": "CC-BY-4.0",
   "main": "server.js",
   "devDependencies": {
