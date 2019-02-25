@@ -9,8 +9,10 @@ addons:
   apt:
     packages:
       - sshpass
-before_install: true
-install: true
+before_install:
+  - npm i
+install:
+  - npm run build
 before_script:
   - chmod +x ./deploy/deploy.sh
 script: true

@@ -6,9 +6,6 @@ export ARCH_NAME=token.package.tgz
 export SYMLINK_NAME=token.frontender.info
 export PROCESS_NAME=token.frontender.info
 
-npm i
-npm run build
-
 mkdir ${RESULT_DIR}
 shopt -s extglob
 mv -f -v !(${RESULT_DIR}) ./${RESULT_DIR}
