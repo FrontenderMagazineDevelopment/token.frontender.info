@@ -5,7 +5,7 @@
   "githubAuthURL": "https://github.com/login/oauth/authorize",
   "githubAuthToken": "https://github.com/login/oauth/access_token",
   "cookieDomain": "localhost",
-  "defaultRedirect:": "http://localhost:3030/",
+  "defaultRedirect": "http://localhost:3030/",
   "teams": {
     "author": 314470,
     "developer": 2355618,
