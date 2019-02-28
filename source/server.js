@@ -2,7 +2,7 @@ import fs from 'fs';
 import { resolve } from 'path';
 import restify from 'restify';
 import cookieParser from 'restify-cookies';
-import dotenv from 'dotenv-safe';
+import dotenv from 'dotenv';
 import get from './routes/get';
 import getToken from './routes/token';
 
