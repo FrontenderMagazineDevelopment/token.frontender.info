@@ -14,34 +14,14 @@
     "fm"
   ],
   "author": "Anton Nemtsev <thesilentimp@gmail.com>",
-  "contributors": [{
-    "name": "Anton Nemtsev",
-    "email": "thesilentimp@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Anton Nemtsev",
+      "email": "thesilentimp@gmail.com"
+    }
+  ],
   "license": "CC-BY-4.0",
   "main": "server.js",
-  "dependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.3.3",
-    "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-syntax-export-default-from": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/runtime": "^7.2.0",
-    "@babel/preset-env": "^7.3.1",
-    "@plasma-platform/tm-message-hook": "^2.0.12",
-    "babel-eslint": "^10.0.1",
-    "documentation": "^9.1.1",
-    "eslint": "^5.14.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-prettier": "^4.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-jest": "^22.3.0",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-react": "^7.12.4",
-    "lint-staged": "^8.1.4",
-    "prettier": "^1.16.4"
-  },
   "dependencies": {
     "connect-mongo": "^2.0.3",
     "dotenv": "^6.2.0",
