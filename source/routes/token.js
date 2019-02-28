@@ -189,7 +189,5 @@ export default async (req, res, next) => {
     domain: config.cookieDomain,
     maxAge: 86400,
   });
-
   res.redirect(req.session.to || config.defaultRedirect, next);
 };
-

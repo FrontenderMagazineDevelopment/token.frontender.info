@@ -9,9 +9,17 @@ import getToken from './routes/token';
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 
-const ENV_PATH = resolve(__dirname, '../.env');
-if (!fs.existsSync(ENV_PATH)) throw new Error('Envirnment files not found');
-dotenv.config({ path: ENV_PATH });
+const ENV_PATH_CURRENT = resolve(__dirname, '../.env');
+const ENV_PATH_PARENT = resolve(__dirname, '../../.env');
+
+const isCurrent = fs.existsSync(ENV_PATH_CURRENT);
+const isParent = fs.existsSync(ENV_PATH_PARENT);
+
+if (!isCurrent && !isParent) throw new Error('Envirnment files not found');
+
+if (isCurrent) dotenv.config({ path: ENV_PATH_CURRENT });
+if (isParent) dotenv.config({ path: ENV_PATH_PARENT });
+
 const CONFIG_DIR = '../config/';
 const CONFIG_PATH = resolve(
   __dirname,
