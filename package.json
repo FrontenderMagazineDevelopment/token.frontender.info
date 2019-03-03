@@ -44,8 +44,8 @@
     "prettier": "^1.16.4"
   },
   "dependencies": {
-    "connect-redis": "^3.4.0",
-    "dotenv-safe": "^6.1.0",
+    "connect-mongo": "^2.0.3",
+    "dotenv": "^6.2.0",
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.4.0",
     "jwt-builder": "^1.1.0",

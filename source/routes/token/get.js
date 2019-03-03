@@ -1,15 +1,24 @@
 import jwt from 'jwt-builder';
 import request from 'request-promise';
-import fs from 'fs';
-import { resolve } from 'path';
-
-const CONFIG_DIR = '../../config/';
-const CONFIG_PATH = resolve(__dirname, `${CONFIG_DIR}application.${(process.env.NODE_ENV || 'local')}.json`);
-
-if (!fs.existsSync(CONFIG_PATH)) throw new Error('Config not found');
-const config = require(CONFIG_PATH); // eslint-disable-line import/no-dynamic-require
 
 export default async (req, res, next) => {
+  const {
+    DOMAIN,
+    TEAMS_DEVELOPER,
+    TEAMS_TRANSLATOR,
+    TEAMS_AUTHOR,
+    TEAMS_EDITOR,
+    TEAMS_STAFFER,
+    JWT_SECRET,
+    DEFAULT_REDIRECT,
+    COOKIE_DOMAIN,
+    ORG_NAME,
+    GITHUB_API,
+    GITHUB_AUTH_URL,
+    TOKEN_SERVICE_OPEN,
+    TOKEN_SERVICE_SECRET,
+  } = process.env;
+
   if (req.session === undefined) {
     res.status(400);
     res.end();
@@ -26,10 +35,10 @@ export default async (req, res, next) => {
   try {
     const answer = await request({
       method: 'POST',
-      uri: config.githubAuthToken,
+      uri: GITHUB_AUTH_URL,
       body: {
-        client_id: process.env.TOKEN_SERVICE_OPEN,
-        client_secret: process.env.TOKEN_SERVICE_SECRET,
+        client_id: TOKEN_SERVICE_OPEN,
+        client_secret: TOKEN_SERVICE_SECRET,
         code: req.query.code,
         state: req.query.state,
       },
@@ -53,7 +62,7 @@ export default async (req, res, next) => {
 
   const user = await request({
     method: 'GET',
-    uri: `${config.githubAPI}user`,
+    uri: `${GITHUB_API}user`,
     headers: {
       Authorization: `token ${token}`,
       'User-Agent': 'FM-App',
@@ -69,7 +78,7 @@ export default async (req, res, next) => {
   try {
     const isTeamResponce = await request({
       method: 'GET',
-      uri: `${config.githubAPI}orgs/${config.orgName}/memberships/${profile.login}`,
+      uri: `${GITHUB_API}orgs/${ORG_NAME}/memberships/${profile.login}`,
       headers: {
         Authorization: `token ${token}`,
         'User-Agent': 'FM-App',
@@ -89,7 +98,7 @@ export default async (req, res, next) => {
     try {
       await request({
         method: 'HEAD',
-        uri: `${config.githubAPI}teams/${config.teams.author}/members/${profile.login}`,
+        uri: `${GITHUB_API}teams/${TEAMS_AUTHOR}/members/${profile.login}`,
         headers: {
           Authorization: `token ${token}`,
           'User-Agent': 'FM-App',
@@ -105,7 +114,7 @@ export default async (req, res, next) => {
     try {
       await request({
         method: 'HEAD',
-        uri: `${config.githubAPI}teams/${config.teams.developer}/members/${profile.login}`,
+        uri: `${GITHUB_API}teams/${TEAMS_DEVELOPER}/members/${profile.login}`,
         headers: {
           Authorization: `token ${token}`,
           'User-Agent': 'FM-App',
@@ -121,7 +130,7 @@ export default async (req, res, next) => {
     try {
       await request({
         method: 'HEAD',
-        uri: `${config.githubAPI}teams/${config.teams.editor}/members/${profile.login}`,
+        uri: `${GITHUB_API}teams/${TEAMS_EDITOR}/members/${profile.login}`,
         headers: {
           Authorization: `token ${token}`,
           'User-Agent': 'FM-App',
@@ -137,7 +146,7 @@ export default async (req, res, next) => {
     try {
       await request({
         method: 'HEAD',
-        uri: `${config.githubAPI}teams/${config.teams.staffer}/members/${profile.login}`,
+        uri: `${GITHUB_API}teams/${TEAMS_STAFFER}/members/${profile.login}`,
         headers: {
           Authorization: `token ${token}`,
           'User-Agent': 'FM-App',
@@ -153,7 +162,7 @@ export default async (req, res, next) => {
     try {
       await request({
         method: 'HEAD',
-        uri: `${config.githubAPI}teams/${config.teams.translator}/members/${profile.login}`,
+        uri: `${GITHUB_API}teams/${TEAMS_TRANSLATOR}/members/${profile.login}`,
         headers: {
           Authorization: `token ${token}`,
           'User-Agent': 'FM-App',
@@ -176,18 +185,18 @@ export default async (req, res, next) => {
 
   const jwtToken = jwt({
     algorithm: 'HS256',
-    secret: process.env.JWT_SECRET,
+    secret: JWT_SECRET,
     nbf: 0,
     iat: new Date().getTime(),
     exp: 86400,
-    iss: 'https://frontender.info/',
+    iss: DOMAIN,
     scope: profile,
   });
 
   res.setCookie('token', jwtToken, {
     path: '/',
-    domain: config.cookieDomain,
+    domain: COOKIE_DOMAIN,
     maxAge: 86400,
   });
-  res.redirect(req.session.to || config.defaultRedirect, next);
+  res.redirect(req.session.to || DEFAULT_REDIRECT, next);
 };
