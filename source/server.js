@@ -15,8 +15,6 @@ const ENV_PATH_PARENT = resolve(__dirname, '../../.env');
 const isCurrent = fs.existsSync(ENV_PATH_CURRENT);
 const isParent = fs.existsSync(ENV_PATH_PARENT);
 
-if (!isCurrent && !isParent) throw new Error('Envirnment files not found');
-
 if (isCurrent) dotenv.config({ path: ENV_PATH_CURRENT });
 if (isParent) dotenv.config({ path: ENV_PATH_PARENT });
 
@@ -64,4 +62,5 @@ server.pre((req, res, next) => {
 server.get('/', get);
 server.get('/token/', getToken);
 
+console.log('PORT: ', PORT);
 server.listen(PORT);

@@ -1,6 +1,8 @@
 import uuid from 'uuid';
 
 export default (req, res, next) => {
+  console.log('GET: /');
+
   const {
     TOKEN_SERVICE_OPEN,
     GITHUB_AUTH_URL,
@@ -26,6 +28,14 @@ export default (req, res, next) => {
   req.session.referrer = req.headers.referrer || req.headers.referer;
   req.session.to = req.query.to;
   req.session.state = state;
+
+  console.log('req.session: ', req.session);
+
+  console.log(`${url
+  }?client_id=${clientId
+  }&redirect_uri=${redirectUri
+  }&scope=${scope
+  }&state=${state}`);
 
   res.redirect(`${url
   }?client_id=${clientId
