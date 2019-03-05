@@ -4,10 +4,10 @@ import restify from 'restify';
 import cookieParser from 'restify-cookies';
 import dotenv from 'dotenv';
 import get from './routes/get';
-import getToken from './routes/token';
+import getToken from './routes/token/get';
 
 const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
+const MongoStore = require('connect-mongo')(session);
 
 const ENV_PATH_CURRENT = resolve(__dirname, '../.env');
 const ENV_PATH_PARENT = resolve(__dirname, '../../.env');
@@ -15,19 +15,17 @@ const ENV_PATH_PARENT = resolve(__dirname, '../../.env');
 const isCurrent = fs.existsSync(ENV_PATH_CURRENT);
 const isParent = fs.existsSync(ENV_PATH_PARENT);
 
-if (!isCurrent && !isParent) throw new Error('Envirnment files not found');
-
 if (isCurrent) dotenv.config({ path: ENV_PATH_CURRENT });
 if (isParent) dotenv.config({ path: ENV_PATH_PARENT });
 
-const CONFIG_DIR = '../config/';
-const CONFIG_PATH = resolve(
-  __dirname,
-  `${CONFIG_DIR}application.${process.env.NODE_ENV || 'local'}.json`,
-);
-if (!fs.existsSync(CONFIG_PATH)) throw new Error(`Config not found: ${CONFIG_PATH}`);
-const config = require(CONFIG_PATH); // eslint-disable-line
-process.env.config = config;
+dotenv.config();
+
+const {
+  MONGODB_PORT,
+  MONGODB_HOST,
+  MONGODB_NAME,
+  COOKIE_SECRET,
+} = process.env;
 
 const { name, version } = require('../package.json');
 
@@ -41,13 +39,15 @@ server.use(restify.plugins.gzipResponse());
 server.use(cookieParser.parse);
 
 server.use(session({
-  store: new RedisStore(),
+  store: new MongoStore({
+    url: `mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_NAME}`,
+  }),
   saveUninitialized: true,
   resave: false,
   cookie: {
     secure: false,
   },
-  secret: process.env.COOKIE_SECRET,
+  secret: COOKIE_SECRET,
 }));
 
 server.pre((req, res, next) => {
@@ -62,5 +62,5 @@ server.pre((req, res, next) => {
 server.get('/', get);
 server.get('/token/', getToken);
 
-console.log('Listening: ', PORT);
+console.log('PORT: ', PORT);
 server.listen(PORT);
