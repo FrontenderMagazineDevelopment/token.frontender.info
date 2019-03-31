@@ -35,11 +35,13 @@ export default (req, res, next) => {
   }?client_id=${clientId
   }&redirect_uri=${redirectUri
   }&scope=${scope
-  }&state=${state}`);
+  }&state=${state
+  }&allow_signup=true`);
 
   res.redirect(`${url
   }?client_id=${clientId
   }&redirect_uri=${redirectUri
   }&scope=${scope
-  }&state=${state}`, next);
+  }&state=${state
+  }&allow_signup=true`, next);
 };
