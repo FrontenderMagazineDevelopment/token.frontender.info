@@ -2,8 +2,6 @@ import jwt from 'jwt-builder';
 import request from 'request-promise';
 
 export default async (req, res, next) => {
-  console.log('GET: /token/');
-
   const {
     DOMAIN,
     TEAMS_DEVELOPER,
@@ -20,22 +18,6 @@ export default async (req, res, next) => {
     TOKEN_SERVICE_OPEN,
     TOKEN_SERVICE_SECRET,
   } = process.env;
-
-  console.log('DOMAIN: ', DOMAIN);
-  console.log('TEAMS_DEVELOPER: ', TEAMS_DEVELOPER);
-  console.log('TEAMS_TRANSLATOR: ', TEAMS_TRANSLATOR);
-  console.log('TEAMS_AUTHOR: ', TEAMS_AUTHOR);
-  console.log('TEAMS_EDITOR: ', TEAMS_EDITOR);
-  console.log('TEAMS_STAFFER: ', TEAMS_STAFFER);
-  console.log('JWT_SECRET: ', JWT_SECRET);
-  console.log('DEFAULT_REDIRECT: ', DEFAULT_REDIRECT);
-  console.log('COOKIE_DOMAIN: ', COOKIE_DOMAIN);
-  console.log('ORG_NAME: ', ORG_NAME);
-  console.log('GITHUB_API: ', GITHUB_API);
-  console.log('GITHUB_AUTH_URL: ', GITHUB_AUTH_URL);
-  console.log('TOKEN_SERVICE_OPEN: ', TOKEN_SERVICE_OPEN);
-  console.log('TOKEN_SERVICE_SECRET: ', TOKEN_SERVICE_SECRET);
-
 
   if (req.session === undefined) {
     res.status(400);
@@ -236,7 +218,7 @@ export default async (req, res, next) => {
     nbf: 0,
     iat: new Date().getTime(),
     exp: 86400,
-    iss: DOMAIN,
+    iss: `https://${DOMAIN}/`,
     scope: profile,
   });
 

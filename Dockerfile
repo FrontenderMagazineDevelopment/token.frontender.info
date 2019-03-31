@@ -14,11 +14,11 @@ COPY package-lock.json .
 FROM base AS dependencies
 RUN apk add --update python build-base
 # install node packages
-RUN npm install --only=prod --silent
+RUN npm ci --only=prod --silent
 # copy production node_modules aside
 RUN cp -R node_modules prod_node_modules
 # install ALL node_modules, including 'devDependencies'
-RUN npm install --silent
+RUN npm ci --silent
 # Run in production mode
 
 #

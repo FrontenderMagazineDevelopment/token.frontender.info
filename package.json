@@ -23,6 +23,13 @@
   "license": "CC-BY-4.0",
   "main": "server.js",
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-syntax-export-default-from": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/preset-env": "^7.3.1",
     "@plasma-platform/tm-message-hook": "^2.0.12",
     "babel-eslint": "^10.0.1",
     "documentation": "^9.1.1",
@@ -37,14 +44,6 @@
     "prettier": "^1.16.4"
   },
   "dependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.3.3",
-    "@babel/node": "^7.2.2",
-    "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-syntax-export-default-from": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/preset-env": "^7.3.1",
     "@babel/runtime": "^7.3.4",
     "connect-mongo": "^2.0.3",
     "dotenv": "^6.2.0",
