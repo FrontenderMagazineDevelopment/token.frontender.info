@@ -36,7 +36,7 @@ RUN apk add --update bash && rm -rf /var/cache/apk/*
 # copy production node_modules
 COPY --from=dependencies /var/app/prod_node_modules ./node_modules
 COPY --from=build /var/app/build ./build
-COPY --from=build /var/app/source ./source
+# COPY --from=build /var/app/source ./source
 
 # Setup environment variables
 ENV NODE_ENV=production
