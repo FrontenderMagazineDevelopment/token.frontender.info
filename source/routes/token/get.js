@@ -15,6 +15,7 @@ export default async (req, res, next) => {
     ORG_NAME,
     GITHUB_API,
     GITHUB_AUTH_URL,
+    GITHUB_AUTH_TOKEN,
     TOKEN_SERVICE_OPEN,
     TOKEN_SERVICE_SECRET,
   } = process.env;
@@ -44,7 +45,7 @@ export default async (req, res, next) => {
   try {
     console.log('request: ', {
       method: 'POST',
-      uri: GITHUB_AUTH_URL,
+      uri: GITHUB_AUTH_TOKEN,
       body: {
         client_id: TOKEN_SERVICE_OPEN,
         client_secret: TOKEN_SERVICE_SECRET,
@@ -62,7 +63,7 @@ export default async (req, res, next) => {
     });
     const answer = await request({
       method: 'POST',
-      uri: GITHUB_AUTH_URL,
+      uri: GITHUB_AUTH_TOKEN,
       body: {
         client_id: TOKEN_SERVICE_OPEN,
         client_secret: TOKEN_SERVICE_SECRET,
