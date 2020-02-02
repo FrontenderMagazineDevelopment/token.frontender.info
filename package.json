@@ -13,6 +13,10 @@
     "tokens",
     "fm"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FrontenderMagazineDevelopment/token.frontender.info.git"
+  },
   "author": "Anton Nemtsev <thesilentimp@gmail.com>",
   "contributors": [
     {
@@ -23,37 +27,40 @@
   "license": "CC-BY-4.0",
   "main": "server.js",
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.3.3",
-    "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-syntax-export-default-from": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/preset-env": "^7.3.1",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-export-namespace-from": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-syntax-export-default-from": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
     "@plasma-platform/tm-message-hook": "^2.0.12",
-    "babel-eslint": "^10.0.1",
-    "documentation": "^9.1.1",
-    "eslint": "^5.14.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-prettier": "^4.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-jest": "^22.3.0",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-react": "^7.12.4",
-    "lint-staged": "^8.1.4",
-    "prettier": "^1.16.4"
+    "babel-eslint": "^10.0.3",
+    "documentation": "^12.1.4",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.6.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.18.2",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "lint-staged": "^10.0.7",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@babel/runtime": "^7.3.4",
-    "connect-mongo": "^2.0.3",
-    "dotenv": "^6.2.0",
-    "express-session": "^1.15.6",
+    "@babel/runtime": "^7.8.4",
+    "acorn": "^7.1.0",
+    "connect-mongo": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "express-session": "^1.17.0",
     "jsonwebtoken": "^8.4.0",
     "jwt-builder": "^1.1.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4",
-    "restify": "^7.7.0",
-    "restify-cookies": "^0.2.5",
-    "uuid": "^3.3.2"
+    "request-promise": "^4.2.5",
+    "restify": "^8.5.1",
+    "restify-cookies": "^0.2.6",
+    "uuid": "^3.4.0"
   }
 }
