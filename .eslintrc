@@ -1,14 +1,23 @@
 {
+  "extends": ["airbnb", "prettier"],
   "parser": "babel-eslint",
-  "extends": "airbnb",
   "plugins": [
     "react",
     "jsx-a11y",
-    "import"
+    "import",
+    "jest"
   ],
   "env": {
+    "browser": true,
     "node": true,
     "jest": true,
+    "worker": true,
+    "serviceworker": true,
     "es6": true
+  },
+  "rules": {
+    "no-underscore-dangle": ["error", {
+      "allow": ["_id", "__filename", "__dirname"]
+    }]
   }
 }
