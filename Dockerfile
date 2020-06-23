@@ -1,5 +1,5 @@
 FROM node:14-alpine AS base
-RUN apk add --update bash && rm -rf /var/cache/apk/*
+RUN apk add --update bash curl && rm -rf /var/cache/apk/*
 RUN mkdir -p /var/app && chown -R node /var/app
 WORKDIR /var/app
 COPY . .
